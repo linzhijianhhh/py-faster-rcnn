@@ -1,7 +1,7 @@
 name: "VGG_ILSVRC_16_layers"
 layer {
   name: 'input-data'
-  type: 'Python'
+  type: 'Python'  #使用python
   top: 'data'
   top: 'im_info'
   top: 'gt_boxes'
