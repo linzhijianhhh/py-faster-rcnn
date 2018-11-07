@@ -1,10 +1,10 @@
 name: "VGG_ILSVRC_16_layers"
 layer {
   name: 'input-data'
-  type: 'Python'  #使用python
-  top: 'data'
-  top: 'im_info'
-  top: 'gt_boxes'
+  type: 'Python'   
+  top: 'data' #top是要输出的东西
+  top: 'im_info' #图像的信息，长宽一类的
+  top: 'gt_boxes' #框的位置，坐标
   python_param {
     module: 'roi_data_layer.layer'
     layer: 'RoIDataLayer'
@@ -364,6 +364,7 @@ layer {
   top: "conv5_3"
 }
 
+#前面都是卷积
 #========= RPN ============
 
 layer {
@@ -375,7 +376,7 @@ layer {
   param { lr_mult: 2.0 }
   convolution_param {
     num_output: 512
-    kernel_size: 3 pad: 1 stride: 1
+    kernel_size: 3 pad: 1 stride: 1  #做了一个3X3的滑动窗口
     weight_filler { type: "gaussian" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
@@ -395,7 +396,7 @@ layer {
   param { lr_mult: 1.0 }
   param { lr_mult: 2.0 }
   convolution_param {
-    num_output: 18   # 2(bg/fg) * 9(anchors)
+    num_output: 18  # 2(bg/fg) * 9(anchors) ，分类：2代表有前景也有背景，9是9个anchors。相等于每个anchors有一个前景和一个背景。输出是前景还是背景的概率
     kernel_size: 1 pad: 0 stride: 1
     weight_filler { type: "gaussian" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
@@ -410,14 +411,14 @@ layer {
   param { lr_mult: 1.0 }
   param { lr_mult: 2.0 }
   convolution_param {
-    num_output: 36   # 4 * 9(anchors)
+    num_output: 36   # 4 * 9(anchors)   回归：4个坐标
     kernel_size: 1 pad: 0 stride: 1
     weight_filler { type: "gaussian" std: 0.01 }
     bias_filler { type: "constant" value: 0 }
   }
 }
 
-layer {
+layer { 
    bottom: "rpn_cls_score"
    top: "rpn_cls_score_reshape"
    name: "rpn_cls_score_reshape"
@@ -426,9 +427,9 @@ layer {
 }
 
 layer {
-  name: 'rpn-data'
+  name: 'rpn-data' #层的名字
   type: 'Python'
-  bottom: 'rpn_cls_score'
+  bottom: 'rpn_cls_score'  #输入是bottom
   bottom: 'gt_boxes'
   bottom: 'im_info'
   bottom: 'data'
